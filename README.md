@@ -114,7 +114,18 @@ yarn add @contentful/rich-text-html-renderer @contentful/rich-text-types
 Now take a look at the `/helpers/contentful.js` file. It offers two important functions `renderHtmlMethod` and `renderImage`.
 
 - `renderHTMLMethod` transforms the extensive node information to the content, since we're mainly interested in the content.
-- `renderImage` was written because _at the moment_ the Gridsome Contentful plugin doesn't support the assets API completely. This means we can't make use of the transformations on Contentful's end before consuming the data in the component. We are getting the raw asset URL. For large images, that's bad, because we don't always need to load a 3000x3000 sized image! The function takes in the asset URL and forces it to point to the [Contentful Images API](https://www.contentful.com/developers/docs/references/images-api/), to allow for some transformations which we'll want.
+- `renderImage` was written because _at the moment_ the Gridsome Contentful plugin doesn't support the assets API completely. This means we can't make use of the transformations on Contentful's end before consuming the data in the component.
+
+### Render Image
+
+We are getting the raw asset URL by default from the API. For large images, that's bad, because we don't always need to load a 3000x3000 sized image! The function takes in the asset URL and forces it to point to the [Contentful Images API](https://www.contentful.com/developers/docs/references/images-api/), to allow for some transformations which we'll want.
+
+```js
+const renderImage = ({ src = "", fit = "", w = 100, h = 100 } = {}) =>
+  `${src.replace(/downloads./g, "images.")}?fit=${fit}&w=${w}&h=${h}`;
+```
+
+The `.replace` function makes sure that even URLs with a download API will point to the images API. The querystring part is making use of the baked in methods of the images API to resize the asset to some shape that's required for a particular component. Presto!
 
 ## Forms
 
